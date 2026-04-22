@@ -6,7 +6,7 @@ const productSchema = new mongoose.Schema({
   description: String,
   price: Number,
   brand: { type: String, default: "Memory Books & Moments" },
-  images: [String],
+  image: [String],
   stock: Number,
 });
 
