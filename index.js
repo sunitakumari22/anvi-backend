@@ -8,6 +8,7 @@ import authRoutes from "./src/routes/auth.routes.js";
 import productRoutes from "./src/routes/product.route.js";
 import cartRoutes from "./src/routes/cart.routes.js";
 import orderRoutes from "./src/routes/order.routes.js";
+import uploadRoutes from "./src/routes/upload.routes.js";
 
 dotenv.config();
 
@@ -17,5 +18,6 @@ app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
 app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
+app.use("/upload", uploadRoutes);
 
 app.listen(5000, () => console.log("Server running"));
