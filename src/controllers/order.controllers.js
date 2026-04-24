@@ -17,3 +17,7 @@ export const placeOrder = async (req, res) => {
 
   res.json(order);
 };
+ export const getOrders = async (req, res) => {
+  const orders = await Order.find({ userId: req.params.userId }).populate("products.productId");
+  res.json(orders);
+}
