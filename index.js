@@ -1,14 +1,12 @@
+import "dotenv/config";
 import app from "./app.js";
 import { connectDB } from "./src/config/db.config.js";
-import dotenv from "dotenv";
 
 import authRoutes from "./src/routes/auth.routes.js";
 import productRoutes from "./src/routes/product.route.js";
 import cartRoutes from "./src/routes/cart.routes.js";
 import orderRoutes from "./src/routes/order.routes.js";
 import uploadRoutes from "./src/routes/upload.routes.js";
-
-dotenv.config();
 
 // ✅ DB connect (serverless safe)
 let isConnected = false;
@@ -26,15 +24,29 @@ app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
 app.use("/upload", uploadRoutes);
 
-// ✅ Root route (IMPORTANT – warna "Cannot GET /")
+// ✅ Root route
 app.get("/", (req, res) => {
   res.send("API is running 🚀");
 });
 
-// ❌ REMOVE this
-// app.listen(5000)
 
-// ✅ Vercel handler
+// ===============================
+// ✅ LOCAL SERVER (only local)
+// ===============================
+if (process.env.VERCEL !== "1") {
+  const PORT = process.env.PORT || 5000;
+
+  connectDatabase().then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+  });
+}
+
+
+// ===============================
+// ✅ VERCEL HANDLER
+// ===============================
 export default async function handler(req, res) {
   await connectDatabase();
   return app(req, res);
