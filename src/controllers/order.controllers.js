@@ -92,9 +92,13 @@ ${productDetails}
   }
 };
  export const getOrders = async (req, res) => {
-  const orders = await Order.find({ userId: req.params.userId }).populate("products.productId");
-  res.json(orders);
-}
+  try {
+    const orders = await Order.find({ userId: req.params.userId }).populate("products.productId");
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user orders" });
+  }
+};
 
 export const getAllOrders = async (req, res) => {
   try {
@@ -106,5 +110,50 @@ export const getAllOrders = async (req, res) => {
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: "Error fetching all orders" });
+  }
+};
+
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { orderStatus } = req.body;
+
+    const allowedStatuses = [
+      "pending",
+      "confirmed",
+      "processing",
+      "shipped",
+      "out_for_delivery",
+      "delivered",
+      "cancelled",
+      "returned",
+    ];
+
+    if (!allowedStatuses.includes(orderStatus)) {
+      return res.status(400).json({
+        message: "Invalid orderStatus value",
+        allowedStatuses,
+      });
+    }
+
+    const updatePayload = { orderStatus };
+    if (orderStatus === "delivered") {
+      updatePayload.deliveredAt = new Date();
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(orderId, updatePayload, {
+      new: true,
+      runValidators: true,
+    })
+      .populate("userId", "name email phone")
+      .populate("products.productId");
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.json(updatedOrder);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating order status" });
   }
 };

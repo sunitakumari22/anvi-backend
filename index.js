@@ -7,6 +7,7 @@ import productRoutes from "./src/routes/product.route.js";
 import cartRoutes from "./src/routes/cart.routes.js";
 import orderRoutes from "./src/routes/order.routes.js";
 import uploadRoutes from "./src/routes/upload.routes.js";
+import contactRoutes from "./src/routes/contact.routes.js";
 
 // ✅ DB connect (serverless safe)
 let isConnected = false;
@@ -23,6 +24,7 @@ app.use("/products", productRoutes);
 app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
 app.use("/upload", uploadRoutes);
+app.use("/contact", contactRoutes);
 
 // ✅ Root route
 app.get("/", (req, res) => {
