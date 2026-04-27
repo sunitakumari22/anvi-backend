@@ -1,8 +1,6 @@
-// server.js
 import app from "./app.js";
 import { connectDB } from "./src/config/db.config.js";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
 
 import authRoutes from "./src/routes/auth.routes.js";
 import productRoutes from "./src/routes/product.route.js";
@@ -12,12 +10,32 @@ import uploadRoutes from "./src/routes/upload.routes.js";
 
 dotenv.config();
 
-connectDB();
+// ✅ DB connect (serverless safe)
+let isConnected = false;
 
+const connectDatabase = async () => {
+  if (isConnected) return;
+  await connectDB();
+  isConnected = true;
+};
+
+// ✅ Routes
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
 app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
 app.use("/upload", uploadRoutes);
 
-app.listen(5000, () => console.log("Server running"));
+// ✅ Root route (IMPORTANT – warna "Cannot GET /")
+app.get("/", (req, res) => {
+  res.send("API is running 🚀");
+});
+
+// ❌ REMOVE this
+// app.listen(5000)
+
+// ✅ Vercel handler
+export default async function handler(req, res) {
+  await connectDatabase();
+  return app(req, res);
+}
